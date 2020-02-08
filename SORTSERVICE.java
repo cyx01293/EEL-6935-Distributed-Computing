@@ -58,7 +58,7 @@ class sortThread implements Runnable {
 	}
 	@Override
 	public void run() {
-		System.out.println("number" + Integer.toString(number) + "thread"+ Thread.currentThread().getName());
+		//System.out.println("number" + Integer.toString(number) + "thread"+ Thread.currentThread().getName());
 		try {
 			gate.await();
 		} catch (InterruptedException e) {
