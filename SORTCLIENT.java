@@ -11,6 +11,7 @@ public class SORTCLIENT {
 
 	public static void main(String[] args) throws RemoteException, NotBoundException, InterruptedException {
 		// TODO Auto-generated method stub
+		long startTime = System.currentTimeMillis();
 		String addr = args[0];
 		String[] info = addr.split(":");
 		int N = Integer.valueOf(args[1]);
@@ -29,6 +30,8 @@ public class SORTCLIENT {
 		int[] sorted = sort.sortQuery(unsorted, N, R);
 		System.out.println("unsorted:" + Arrays.toString(unsorted));
 		System.out.println("sorted:" + Arrays.toString(sorted));
+		long endtTime = System.currentTimeMillis();
+		System.out.println("Program running time:" + Long.toString(endtTime - startTime));
 	}
 
 }
