@@ -22,7 +22,9 @@ public class SORTCLIENT {
 			//Math.max(max, number);
 			unsorted[i] = number;
 		}
+		//Connect to the server with IP address and port
 		Registry registry = LocateRegistry.getRegistry(info[0], Integer.valueOf(info[1]));
+		//Look up a serve named "MultiThreadSort" 
 		SORT sort = (SORT) registry.lookup("MultiThreadSort");
 		int[] sorted = sort.sortQuery(unsorted, N, R);
 		System.out.println("unsorted:" + Arrays.toString(unsorted));

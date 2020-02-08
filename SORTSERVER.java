@@ -15,11 +15,11 @@ public class SORTSERVER {
 		InetAddress inetAddress = InetAddress. getLocalHost();
 		System.out.println("IP Address:- " + inetAddress. getHostAddress());
 		SORT sort = new SORTSERVICE();
-		// 将此服务转换为远程服务接口://Transmit this serve to remote serve interface
+		//Transmit this serve to remote serve interface
         SORT skeleton = (SORT) UnicastRemoteObject.exportObject(sort, 0);
-        // 将RMI服务注册到1099端口://Register the serve to port 1099
+        //Register the serve to port 1099
         Registry registry = LocateRegistry.createRegistry(1099);
-        // 注册此服务，服务名为"WorldClock":// Register this serve, and assign "MultiThreadSort" to it
+        // Register this serve, and assign "MultiThreadSort" to it
         registry.rebind("MultiThreadSort", skeleton);
 	}
 

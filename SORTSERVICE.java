@@ -14,7 +14,7 @@ public class SORTSERVICE implements SORT {
 	public static final Object lock = new Object();
 	@Override
 	public int[] sortQuery(int[] unsorted, int N, int R) throws RemoteException, InterruptedException {
-		//int N = unsorted.length;
+		//Implement the sort algorithm with multithreads
 		if (!sortedList.isEmpty()) {
 			sortedList.clear();
 		}
@@ -34,12 +34,6 @@ public class SORTSERVICE implements SORT {
 		for (Thread thread : spawnWorker) {
 		    thread.join();
 		}
-		/*
-		 * System.out.println("sorted[0]:" + Integer.toString(sorted[0])); sorted[0] =
-		 * st.getValue(); System.out.println("sorted[0]:" +
-		 * Integer.toString(sorted[0]));
-		 */
-		//spawnWorker[0].join();
 		System.out.println("sortList.size:" + Integer.toString(sortedList.size()));
 		for (int i = 0; i < sortedList.size(); ++i) {
 			//System.out.println("sorted[" + i +"]:" + Integer.toString(sorted[i]));
@@ -53,6 +47,7 @@ public class SORTSERVICE implements SORT {
 	
 }
 class sortThread implements Runnable {
+	// class of a thread to sort
 	int value;
 	int number;
 	CountDownLatch gate;
