@@ -4,7 +4,10 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 
@@ -17,12 +20,15 @@ public class BROADCASTCLIENT {
 		String[] info = addr.split(":");
 		int N = Integer.valueOf(args[1]);
 		int R = Integer.valueOf(args[2]);
+		List<Integer> pre = new ArrayList<>();
+		for (int i = 0; i < R; ++i) {
+			pre.add(i + 1);
+		}
+		Collections.shuffle(pre);
 		int[] unsorted = new int[N];
-		Random random = new Random();
+		
 		for (int i = 0; i < N; ++i) {
-			int number = random.nextInt(R) + 1; 
-			//Math.max(max, number);
-			unsorted[i] = number;
+			unsorted[i] = pre.get(i);
 		}
 		System.out.println("unsorted:" + Arrays.toString(unsorted));
 		System.out.println("Program is running...");
