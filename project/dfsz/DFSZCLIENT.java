@@ -1,4 +1,4 @@
-//package dfsz;
+package dfsz;
 
 import java.io.IOException;
 import java.net.InetAddress;

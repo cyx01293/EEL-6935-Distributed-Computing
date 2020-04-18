@@ -1,4 +1,4 @@
-//package dfsz;
+package dfsz;
 
 import java.io.*;
 import java.rmi.*;
