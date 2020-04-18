@@ -1,5 +1,5 @@
 JC = javac 
-JAR = /home/apache-zookeeper-3.6.0-bin/lib/zookeeper-3.6.0.jar
+JAR = .:/home/apache-zookeeper-3.6.0-bin/lib/zookeeper-3.6.0.jar
 JFLAGS = -g -cp
 .SUFFIXES: .java .class
 .java.class:
