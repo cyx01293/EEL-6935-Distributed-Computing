@@ -3,7 +3,7 @@ JAR = /home/apache-zookeeper-3.6.0-bin/lib/zookeeper-3.6.0.jar
 JFLAGS = -g -cp
 .SUFFIXES: .java .class
 .java.class:
-		$(JC) $(JFLAGS) $*.java
+		$(JC) $(JFLAGS) $(JAR) $*.java
 
 CLASSES = \
 		Storage.java \

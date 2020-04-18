@@ -1,15 +1,16 @@
 JC = javac 
-JAR = jcommon-1.0.23.jar:jfreechart-1.0.19.jar
-JFLAGS = -g 
+JAR = /home/apache-zookeeper-3.6.0-bin/lib/zookeeper-3.6.0.jar
+JFLAGS = -g -cp
 .SUFFIXES: .java .class
 .java.class:
-		$(JC) $(JFLAGS) $*.java
+		$(JC) $(JFLAGS) $(JAR) $*.java
 
 CLASSES = \
-		SORT.java \
-		SORTSERVICE.java \
-		SORTSERVER.java \
-		SORTCLIENT.java
+		Storage.java \
+		SERVICE.java \
+		DFSSERVER.java \
+		DFSCLIENT.java 
+		
 
 default: classes
 classes: $(CLASSES:.java=.class)
