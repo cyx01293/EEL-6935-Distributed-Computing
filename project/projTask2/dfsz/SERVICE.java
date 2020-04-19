@@ -199,11 +199,11 @@ public class SERVICE implements Storage {
 			return "command error";
 		}
 	}
-	public void printFiles() {
+	public void printFiles() throws RemoteException, IOException, NotBoundException, KeeperException, InterruptedException {
 		try {
 			String path = "/";
         	conn = new ZooKeeperConnection();
-         	zk = conn.connect(this.ip[0] + ":" +port[0]);
+         	zk = conn.connect(this.ip[0] + ":" + 2181);
          	Stat stat = znode_exists(path); // Stat checks the path
 
          	if(stat!= null) {
