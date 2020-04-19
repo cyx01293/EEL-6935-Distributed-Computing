@@ -251,7 +251,7 @@ public class SERVICE implements Storage {
 				
             String data = new String(b, "UTF-8");
             System.out.println(data);
-            connectedSignal.await();
+            // connectedSignal.await();
             return data;
 				
          	} else {
@@ -431,7 +431,7 @@ public class SERVICE implements Storage {
       	try {
          	conn = new ZooKeeperConnection();
          	zk = conn.connect(this.ip[0] + ":" + "2181");
-         	delete(path); //delete the node with the specified path
+         	deleteZnode(path); //delete the node with the specified path
          	String s = "File deleted";
          	System.out.println(s);
          	return s;
