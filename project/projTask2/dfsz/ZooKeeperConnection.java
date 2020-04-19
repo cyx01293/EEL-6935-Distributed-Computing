@@ -21,7 +21,7 @@ import org.apache.zookeeper.KeeperException.Code;
 import org.apache.zookeeper.data.Stat;
 
 
-public class ZKConnection {
+public class ZooKeeperConnection {
 	// declare zookeeper instance to access ZooKeeper ensemble
     private ZooKeeper zoo;
     final CountDownLatch connectedSignal = new CountDownLatch(1);
