@@ -167,13 +167,14 @@ public class SERVICE implements Storage {
 			return "The file is being read. Operation fails.";
 		}
 		if (info[0].equals("create")) {
-			if(create(info[1])) {
-				printFiles();
-				return "File created";
-			}else {
-				printFiles();
-				return "File already exists or file name error";
-			}
+			return create(info[1]);
+			// if(create(info[1])) {
+			// 	printFiles();
+			// 	return "File created";
+			// }else {
+			// 	printFiles();
+			// 	return "File already exists or file name error";
+			// }
 		}else if (info[0].equals("read")) {
 			String s = read(info[1]);
 			printFiles();
@@ -314,10 +315,11 @@ public class SERVICE implements Storage {
          	zk = conn.connect(this.ip[0] + ":" + "2181");
          	createZnode(path, data); // Create the data to the specified path
          	conn.close();
-         	return true;
+         	String s = "File created"
+         	return s;
       	} catch (Exception e) {
         	System.out.println(e.getMessage());
-        	return false; //Catch error message
+        	return e.getMessage(); //Catch error message
       	}
 		//Create a file
 		// File f = new File(file);
