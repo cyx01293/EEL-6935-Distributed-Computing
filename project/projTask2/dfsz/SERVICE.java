@@ -260,6 +260,7 @@ public class SERVICE implements Storage {
          	}
       	} catch(Exception e) {
         	System.out.println(e.getMessage());
+        	return e.getMessage();
       	}
 		// //If the file does not exists, return;
 		// if (!fileTable.containsKey(file)) {
@@ -341,7 +342,7 @@ public class SERVICE implements Storage {
       	zk.create(path, data, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
   	}
   	@Override
-  	public boolean exists(String file) throws InterruptedException,KeeperException {
+  	public boolean exists(String file) throws InterruptedException,KeeperException, RemoteException {
   		String path = file; // Assign znode to the specified path
          
       	try {
@@ -359,6 +360,7 @@ public class SERVICE implements Storage {
             
       	} catch(Exception e) {
          	System.out.println(e.getMessage()); // Catches error messages
+         	return false;
       	}
   	}
   	public static Stat znode_exists(String path) throws KeeperException,InterruptedException {

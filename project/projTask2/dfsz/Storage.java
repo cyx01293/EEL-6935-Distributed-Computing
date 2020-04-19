@@ -6,6 +6,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
+import org.apache.zookeeper.KeeperException;
+
 public interface Storage extends Remote{
 	public void makeConnected()throws RemoteException, IOException;
 	public void updateFiles(Hashtable<String, List<String>> fileTable) throws RemoteException, IOException;
@@ -22,5 +24,5 @@ public interface Storage extends Remote{
 	public void releaseLock(String behavior, String file) throws RemoteException, IOException;
 	public void acquireLock(String behavior, String file) throws RemoteException, IOException;
 	public void updateLock(String behavior, Hashtable<String, List<String>> lockedFile) throws RemoteException, IOException;
-	public boolean exists(String file) throws InterruptedException,KeeperException;
+	public boolean exists(String file) throws InterruptedException,KeeperException, RemoteException;
 }

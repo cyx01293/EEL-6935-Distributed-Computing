@@ -27,7 +27,7 @@ import org.apache.zookeeper.CreateMode;
 
 public class DFSZCLIENT {
 
-	public static void main(String[] args) throws NumberFormatException, NotBoundException, IOException {
+	public static void main(String[] args) throws NumberFormatException, NotBoundException, IOException, KeeperException {
 		// TODO Auto-generated method stub
 		int argsSize = args.length;
 		long startTime = System.currentTimeMillis();
