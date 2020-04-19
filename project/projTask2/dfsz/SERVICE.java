@@ -200,13 +200,34 @@ public class SERVICE implements Storage {
 		}
 	}
 	public void printFiles() {
-		//Print out the latest file list stored in hashtable
-		System.out.println("Hashtable content:");
-		for (String key : fileTable.keySet()) {
-			System.out.println("File name:" + key);
-			System.out.println("Available server:" + fileTable.get(key));
-		}
-		System.out.println();
+		try {
+			String path = "/";
+        	conn = new ZooKeeperConnection();
+         	zk = conn.connect(this.ip[0] + ":" +port[0]);
+         	Stat stat = znode_exists(path); // Stat checks the path
+
+         	if(stat!= null) {
+
+            	List <String> children = zk.getChildren(path, false);
+            	for(int i = 0; i < children.size(); i++) {
+            		System.out.println(children.get(i)); //Print children's
+            	}
+            	
+         	} else {
+            	System.out.println("Node does not exists");
+         	}
+
+      	} catch(Exception e) {
+         	System.out.println(e.getMessage());
+      	}
+
+		// //Print out the latest file list stored in hashtable
+		// System.out.println("Hashtable content:");
+		// for (String key : fileTable.keySet()) {
+		// 	System.out.println("File name:" + key);
+		// 	System.out.println("Available server:" + fileTable.get(key));
+		// }
+		// System.out.println();
 	}
 	@Override
 	public byte[] read() throws RemoteException {
@@ -303,7 +324,7 @@ public class SERVICE implements Storage {
 		// }
 	}
 	@Override
-	public boolean create(String file) throws RemoteException, IOException, KeeperException{
+	public String create(String file) throws RemoteException, IOException, KeeperException{
       	// znode path
       	String path = file; // Assign path to znode
 
@@ -315,7 +336,7 @@ public class SERVICE implements Storage {
          	zk = conn.connect(this.ip[0] + ":" + "2181");
          	createZnode(path, data); // Create the data to the specified path
          	conn.close();
-         	String s = "File created"
+         	String s = "File created";
          	return s;
       	} catch (Exception e) {
         	System.out.println(e.getMessage());

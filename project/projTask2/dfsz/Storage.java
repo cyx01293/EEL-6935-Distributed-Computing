@@ -15,7 +15,7 @@ public interface Storage extends Remote{
 	public String commands(String command) throws RemoteException, IOException, NotBoundException, KeeperException;
 	public byte[] read() throws RemoteException;
 	public String read(String file ) throws IOException , RemoteException, KeeperException;
-	public boolean create (String file) throws RemoteException, IOException, KeeperException;
+	public String create (String file) throws RemoteException, IOException, KeeperException;
 	public String write(String file, int size) throws java.rmi.UnknownHostException, IOException, KeeperException;
 	public String delete(String IP) throws UnknownHostException, IOException, KeeperException;
 	public void exit() throws RemoteException;
