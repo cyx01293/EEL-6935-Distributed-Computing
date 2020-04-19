@@ -25,6 +25,13 @@ public class SERVICE implements Storage {
 	Hashtable<String, List<String>> fileTable = new Hashtable<>();
 	Hashtable<String, List<String>> lockedFile = new Hashtable<>();
 	Hashtable<String, List<String>> writeLock = new Hashtable<>();
+
+	// create static instance for zookeeper class.
+   private static ZooKeeper zk;
+
+   // create static instance for ZooKeeperConnection class.
+   private static ZooKeeperConnection conn;
+
 	public SERVICE(String localIP) {
 		this.localIP = localIP;
 	}
@@ -195,119 +202,250 @@ public class SERVICE implements Storage {
 	}
 	@Override
 	public String read(String file) throws IOException, RemoteException {
-		//If the file does not exists, return;
-		if (!fileTable.containsKey(file)) {
-			String s = "File does not exists or file name error";
-			return s;
-		}
+		String path = file;
+      	final CountDownLatch connectedSignal = new CountDownLatch(1);
+		
+      	try {
+        	conn = new ZooKeeperConnection();
+         	zk = conn.connect(this.ip[0] + ":" + "2181");
+         	Stat stat = znode_exists(path);
+			
+         	if(stat != null) {
+            	byte[] b = zk.getData(path, new Watcher() {
+				
+               		public void process(WatchedEvent we) {
+						
+                  		if (we.getType() == Event.EventType.None) {
+                     		switch(we.getState()) {
+                        	case Expired:
+                        		connectedSignal.countDown();
+                        	break;
+                     		}
+							
+                  		} else {
+                     		String path = file;
+							
+                     		try {
+                        		byte[] bn = zk.getData(path, false, null);
+                        		String data = new String(bn, "UTF-8");
+                        		System.out.println(data);
+                        		connectedSignal.countDown();
+							
+                     		} catch(Exception ex) {
+                        		System.out.println(ex.getMessage());
+                     		}
+                  		}
+               		}
+            	}, null);
+				
+            String data = new String(b, "UTF-8");
+            System.out.println(data);
+            connectedSignal.await();
+            return data;
+				
+         	} else {
+            	System.out.println("Node does not exists");
+            	return "File does not exists or file name error";
+         	}
+      	} catch(Exception e) {
+        	System.out.println(e.getMessage());
+      	}
+		// //If the file does not exists, return;
+		// if (!fileTable.containsKey(file)) {
+		// 	String s = "File does not exists or file name error";
+		// 	return s;
+		// }
 
-		if (fileTable.get(file).contains(this.localIP)) {
-			//If the file already exists in this server, read the content of the file
-			File f = new File(file); 
-			FileReader fr = new FileReader(f); 
-			StringBuilder sb = new StringBuilder();
-			int i; 
-			while ((i=fr.read()) != -1) {
-				// System.out.print((char) i); 
-				sb.append((char) i);
-			} 
-			// System.out.println(); 
-			fr.close();
-			return sb.toString();
-		}else {
-			//If the file does not exist in this server, connect the available server and get the buffer.
-			File f = new File(file); 
-			if (f.exists()) {
-				f.delete();
-			}
-			f.createNewFile();
-			String addr = fileTable.get(file).get(0);
-			Storage sr = storageTable.get(addr);
-			String s = sr.read(file);
-			FileWriter fw = new FileWriter(f);
-			fw.write(s);
-			fw.flush();
-			fileTable.get(file).add(this.localIP);
-			for (String key : storageTable.keySet()) {
-				storageTable.get(key).updateFiles(this.fileTable);
-			}
-			return s;
-		}
+		// if (fileTable.get(file).contains(this.localIP)) {
+		// 	//If the file already exists in this server, read the content of the file
+		// 	File f = new File(file); 
+		// 	FileReader fr = new FileReader(f); 
+		// 	StringBuilder sb = new StringBuilder();
+		// 	int i; 
+		// 	while ((i=fr.read()) != -1) {
+		// 		// System.out.print((char) i); 
+		// 		sb.append((char) i);
+		// 	} 
+		// 	// System.out.println(); 
+		// 	fr.close();
+		// 	return sb.toString();
+		// }else {
+		// 	//If the file does not exist in this server, connect the available server and get the buffer.
+		// 	File f = new File(file); 
+		// 	if (f.exists()) {
+		// 		f.delete();
+		// 	}
+		// 	f.createNewFile();
+		// 	String addr = fileTable.get(file).get(0);
+		// 	Storage sr = storageTable.get(addr);
+		// 	String s = sr.read(file);
+		// 	FileWriter fw = new FileWriter(f);
+		// 	fw.write(s);
+		// 	fw.flush();
+		// 	fileTable.get(file).add(this.localIP);
+		// 	for (String key : storageTable.keySet()) {
+		// 		storageTable.get(key).updateFiles(this.fileTable);
+		// 	}
+		// 	return s;
+		// }
 	}
 	@Override
-	public boolean create(String file) throws RemoteException, IOException {
+	public boolean create(String file) throws RemoteException, IOException, KeeperException{
+      	// znode path
+      	String path = file; // Assign path to znode
+
+      	// data in byte array
+      	byte[] data = "".getBytes(); // Declare data
+    
+      	try {
+         	conn = new ZooKeeperConnection();
+         	zk = conn.connect(this.ip[0] + ":" + "2181");
+         	createZnode(path, data); // Create the data to the specified path
+         	conn.close();
+         	return true;
+      	} catch (Exception e) {
+        	System.out.println(e.getMessage());
+        	return false; //Catch error message
+      	}
 		//Create a file
-		File f = new File(file);
-		if (fileTable.containsKey(file)) {
-			return false;	
-		}
-		else {
-			if (f.exists()) {
-				f.delete();
-			}
-			f.createNewFile();
-			List<String> temp = new LinkedList<>();
-			temp.add(this.localIP);
-			fileTable.put(file, temp);
-			for (String key : storageTable.keySet()) {
-				storageTable.get(key).updateFiles(this.fileTable);
-			}
-			return true;
-		}
+		// File f = new File(file);
+		// if (fileTable.containsKey(file)) {
+		// 	return false;	
+		// }
+		// else {
+		// 	if (f.exists()) {
+		// 		f.delete();
+		// 	}
+		// 	f.createNewFile();
+		// 	List<String> temp = new LinkedList<>();
+		// 	temp.add(this.localIP);
+		// 	fileTable.put(file, temp);
+		// 	for (String key : storageTable.keySet()) {
+		// 		storageTable.get(key).updateFiles(this.fileTable);
+		// 	}
+		// 	return true;
+		// }
 	}
+	public void createZnode(String path, byte[] data) throws KeeperException,InterruptedException {
+      	zk.create(path, data, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+  	}
+
+  	public boolean exists(String file) throws InterruptedException,KeeperException {
+  		String path = file; // Assign znode to the specified path
+         
+      	try {
+         	conn = new ZooKeeperConnection();
+         	zk = conn.connect(this.ip[0] + ":" + "2181");
+         	Stat stat = znode_exists(path); // Stat checks the path of the znode
+            
+         	if(stat != null) {
+            	System.out.println("Node exists and the node version is " + stat.getVersion());
+            	return true;
+         	} else {
+            	System.out.println("Node does not exists");
+            	return false;
+         	}
+            
+      	} catch(Exception e) {
+         	System.out.println(e.getMessage()); // Catches error messages
+      	}
+  	}
+  	public static Stat znode_exists(String path) throws KeeperException,InterruptedException {
+      	return zk.exists(path, true);
+   	}
 	@Override
 	public String write(String file, int size) throws java.rmi.UnknownHostException, IOException {
-		//Write a file
-		if (!fileTable.containsKey(file)) {
-			String s = "File does not exists or file name error";
-			return s;
-		}
-		//If old buffer exists in this server, delete it first.
-		File f = new File(file);
-		delete(file);
-		f.createNewFile();
+		String path= file;
+      	
 		Random random = new Random();
-		FileWriter fw = new FileWriter(f);
+		String content = "";
 		//Generate size random characters, and write it to the file
 		for (int i = 0; i < size; i++) {
 			char c = (char) random.nextInt(128);
-			fw.write(c);
-			fw.flush();
+			content += c;
 		}
-		List<String> temp = new LinkedList<>();
-		temp.add(this.localIP);
-		fileTable.put(file, temp);
-		//update the file list hashtable
-		for (String key : storageTable.keySet()) {
-			Hashtable<String, List<String>> ht = this.fileTable;
-			storageTable.get(key).updateFiles(ht);
-		}
-		String s = "Writing successful";
-		System.out.println("the total number of bytes written to the file:" + size);
-		fw.close();
-		return s;
+		byte[] data = content.getBytes(); //Assign data which is to be updated.
+      	try {
+         	conn = new ZooKeeperConnection();
+         	zk = conn.connect(this.ip[0] + ":" + "2181");
+         	update(path, data); // Update znode data to the specified path
+         	String s = "Writing successful";
+         	return s;
+      	} catch(Exception e) {
+         	System.out.println(e.getMessage());
+         	String s = "File does not exists or file name error";
+         	return s;
+      	}
+		// //Write a file
+		// if (!fileTable.containsKey(file)) {
+		// 	String s = "File does not exists or file name error";
+		// 	return s;
+		// }
+		// //If old buffer exists in this server, delete it first.
+		// File f = new File(file);
+		// delete(file);
+		// f.createNewFile();
+		// Random random = new Random();
+		// FileWriter fw = new FileWriter(f);
+		// //Generate size random characters, and write it to the file
+		// for (int i = 0; i < size; i++) {
+		// 	char c = (char) random.nextInt(128);
+		// 	fw.write(c);
+		// 	fw.flush();
+		// }
+		// List<String> temp = new LinkedList<>();
+		// temp.add(this.localIP);
+		// fileTable.put(file, temp);
+		// //update the file list hashtable
+		// for (String key : storageTable.keySet()) {
+		// 	Hashtable<String, List<String>> ht = this.fileTable;
+		// 	storageTable.get(key).updateFiles(ht);
+		// }
+		// String s = "Writing successful";
+		// System.out.println("the total number of bytes written to the file:" + size);
+		// fw.close();
+		// return s;
 		
 	}
-
+	public static void update(String path, byte[] data) throws KeeperException,InterruptedException {
+      	zk.setData(path, data, zk.exists(path,true).getVersion());
+   	}
 
 	@Override
 	public String delete(String file) throws java.rmi.UnknownHostException, IOException {
-		// Delete the file
-		File f = new File(file);
-		if (!fileTable.containsKey(file)) {
-			String s = "File does not exists or file name error";
-			return s;
-		}else {
-			//delete all the buffer in every replica
-			f.delete();
-			fileTable.remove(file);
-			String s = "File deleted";
-			for (String key : storageTable.keySet()) {
-				storageTable.get(key).delete(file);
-			}
-			return s;
-		}
+   		String path = file; //Assign path to the znode
+		
+      	try {
+         	conn = new ZooKeeperConnection();
+         	zk = conn.connect(this.ip[0] + ":" + "2181");
+         	delete(path); //delete the node with the specified path
+         	String s = "File deleted";
+         	System.out.println(s);
+         	return s;
+      	} catch(Exception e) {
+         	System.out.println(e.getMessage()); // catches error messages
+         	String s = "File does not exists or file name error";
+         	return s;
+      	}
+		// // Delete the file
+		// File f = new File(file);
+		// if (!fileTable.containsKey(file)) {
+		// 	String s = "File does not exists or file name error";
+		// 	return s;
+		// }else {
+		// 	//delete all the buffer in every replica
+		// 	f.delete();
+		// 	fileTable.remove(file);
+		// 	String s = "File deleted";
+		// 	for (String key : storageTable.keySet()) {
+		// 		storageTable.get(key).delete(file);
+		// 	}
+		// 	return s;
+		// }
 	}
+	public static void deleteZnode(String path) throws KeeperException,InterruptedException {
+     	zk.delete(path,zk.exists(path,true).getVersion());
+   	}
 	@Override
 	public void exit() throws RemoteException {
 		// TODO Auto-generated method stub
