@@ -15,15 +15,10 @@ import org.apache.zookeeper.data.Stat;
 public class DataMonitor implements Watcher, StatCallback {
 
     ZooKeeper zk;
-
     String znode;
-
     Watcher chainedWatcher;
-
     boolean dead;
-
     DataMonitorListener listener;
-
     byte prevData[];
 
     public DataMonitor(ZooKeeper zk, String znode, Watcher chainedWatcher,
@@ -63,8 +58,8 @@ public class DataMonitor implements Watcher, StatCallback {
             switch (event.getState()) {
             case SyncConnected:
                 // In this particular example we don't need to do anything
-                // here - watches are automatically re-registered with 
-                // server and any watches triggered while the client was 
+                // here - watches are automatically re-registered with
+                // server and any watches triggered while the client was
                 // disconnected will be delivered (in order of course)
                 break;
             case Expired:
