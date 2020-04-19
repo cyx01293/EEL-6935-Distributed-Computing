@@ -10,6 +10,7 @@ import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -19,6 +20,7 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.Stat;
+
 
 public class SERVICE implements Storage {
 	String[] ip;
@@ -157,7 +159,7 @@ public class SERVICE implements Storage {
       	}
       }
 	}
-	public String commands(String command) throws RemoteException, IOException, NotBoundException {
+	public String commands(String command) throws RemoteException, IOException, NotBoundException, KeeperException {
 		//input commands from the client
 		String[] info = command.split(" ");
 		if (info.length < 2) return "Input parameter error";
@@ -210,7 +212,7 @@ public class SERVICE implements Storage {
 		return null;
 	}
 	@Override
-	public String read(String file) throws IOException, RemoteException {
+	public String read(String file) throws IOException, RemoteException, KeeperException {
 		String path = file;
       	final CountDownLatch connectedSignal = new CountDownLatch(1);
 		
@@ -335,10 +337,10 @@ public class SERVICE implements Storage {
 		// 	return true;
 		// }
 	}
-	public void createZnode(String path, byte[] data) throws KeeperException,InterruptedException {
+	public void createZnode(String path, byte[] data) throws KeeperException,InterruptedException, KeeperException {
       	zk.create(path, data, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
   	}
-
+  	@Override
   	public boolean exists(String file) throws InterruptedException,KeeperException {
   		String path = file; // Assign znode to the specified path
          
@@ -363,7 +365,7 @@ public class SERVICE implements Storage {
       	return zk.exists(path, true);
    	}
 	@Override
-	public String write(String file, int size) throws java.rmi.UnknownHostException, IOException {
+	public String write(String file, int size) throws java.rmi.UnknownHostException, IOException, KeeperException {
 		String path= file;
       	
 		Random random = new Random();
@@ -421,7 +423,7 @@ public class SERVICE implements Storage {
    	}
 
 	@Override
-	public String delete(String file) throws java.rmi.UnknownHostException, IOException {
+	public String delete(String file) throws java.rmi.UnknownHostException, IOException, KeeperException {
    		String path = file; //Assign path to the znode
 		
       	try {
