@@ -47,7 +47,7 @@ public class DFSZCLIENT {
 		System.out.println("...");
 		//Look up a service named "DFS" 
 		// Storage service = (Storage) registry.lookup("DFS" + ip[server] + ":" + port[server]);
-		Storage service = (Storage) registry.lookup("DFS" + ip[0] + ":" + port[0]);
+		Storage service = (Storage) registry.lookup("DFS" + ip[server] + ":" + port[server]);
 		service.makeConnected();
 		//Initialize the server
 		String clientID = "";

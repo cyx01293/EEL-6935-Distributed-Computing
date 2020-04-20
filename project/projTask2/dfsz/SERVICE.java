@@ -29,6 +29,7 @@ public class SERVICE implements Storage {
 	int argsSize;
 	String clientID;
 	String localIP;
+	String realIP;
 	Semaphore sem;
 	boolean isConnected;
 	Map<String, Registry> registryTable = new HashMap<>();
@@ -45,6 +46,8 @@ public class SERVICE implements Storage {
 
 	public SERVICE(String localIP) {
 		this.localIP = localIP;
+		String[] ad = localIP.split(":");
+		this.realIP = ad[0];
 	}
 	public void makeConnected() throws RemoteException, IOException {
 		//change this server's connection status to true
@@ -207,7 +210,7 @@ public class SERVICE implements Storage {
 		// try {
 		// 	String path = "/";
   //       	conn = new ZooKeeperConnection();
-  //        	zk = conn.connect("localhost");
+  //        	zk = conn.connect(this.realIP + ":" + "2181");
   //        	Stat stat = znode_exists(path); // Stat checks the path
 
   //        	if(stat!= null) {
@@ -247,7 +250,7 @@ public class SERVICE implements Storage {
 		}
       	try {
         	conn = new ZooKeeperConnection();
-         	zk = conn.connect("localhost");
+         	zk = conn.connect(this.realIP + ":" + "2181");
          	Stat stat = znode_exists(path);
 			
          	if(fileTable.get(file).contains(this.localIP) && stat != null) {
@@ -352,7 +355,7 @@ public class SERVICE implements Storage {
     
       	try {
          	conn = new ZooKeeperConnection();
-         	zk = conn.connect("localhost");
+         	zk = conn.connect(this.realIP + ":" + "2181");
          	if (fileTable.containsKey(file)) {
 				return "File already exists"; // Create the data to the specified path
 			}
@@ -401,7 +404,7 @@ public class SERVICE implements Storage {
          
       	try {
          	conn = new ZooKeeperConnection();
-         	zk = conn.connect("localhost");
+         	zk = conn.connect(this.realIP + ":" + "2181");
          	Stat stat = znode_exists(path); // Stat checks the path of the znode
             
          	if(stat != null) {
@@ -439,7 +442,7 @@ public class SERVICE implements Storage {
 		byte[] data = content.getBytes(); //Assign data which is to be updated.
       	try {
          	conn = new ZooKeeperConnection();
-			zk = conn.connect("localhost");
+			zk = conn.connect(this.realIP + ":" + "2181");
          	//update(path, data); // Update znode data to the specified path
          	createZnode(path, data);
          	List<String> temp = new LinkedList<>();
@@ -503,7 +506,7 @@ public class SERVICE implements Storage {
 				return s;
 			}
          	conn = new ZooKeeperConnection();
-         	zk = conn.connect("localhost");
+         	zk = conn.connect(this.realIP + ":" + "2181");
          	if (exists(file)) {
          		deleteZnode(file); //delete the node with the specified path
          	}
