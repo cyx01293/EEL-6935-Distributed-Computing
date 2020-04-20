@@ -458,7 +458,7 @@ public class SERVICE implements Storage {
          	return s;
       	} catch(Exception e) {
          	System.out.println(e.getMessage());
-         	String s = "File does not exists or file name error";
+         	String s = "File does not exists";
          	return s;
       	}
 		// //Write a file
