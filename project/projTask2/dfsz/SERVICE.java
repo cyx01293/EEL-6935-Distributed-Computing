@@ -373,7 +373,7 @@ public class SERVICE implements Storage {
 			}
          	return s;
       	} catch (Exception e) {
-        	// System.out.println(e.getMessage());
+        	System.out.println(e.getMessage());
         	return e.getMessage(); //Catch error message
       	}
 		//Create a file
@@ -457,7 +457,7 @@ public class SERVICE implements Storage {
          	System.out.println("the total number of bytes written to the file:" + size);
          	return s;
       	} catch(Exception e) {
-         	// System.out.println(e.getMessage());
+         	System.out.println(e.getMessage());
          	String s = "File does not exists or file name error";
          	return s;
       	}
