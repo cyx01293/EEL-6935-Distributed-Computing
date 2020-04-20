@@ -241,13 +241,16 @@ public class SERVICE implements Storage {
 	public String read(String file) throws IOException, RemoteException, KeeperException {
 		String path = file;
       	final CountDownLatch connectedSignal = new CountDownLatch(1);
-		
+		if (!fileTable.containsKey(file)) {
+			String s = "File does not exists or file name error";
+			return s;
+		}
       	try {
         	conn = new ZooKeeperConnection();
          	zk = conn.connect("localhost");
          	Stat stat = znode_exists(path);
 			
-         	if(stat != null) {
+         	if(fileTable.get(file).contains(this.localIP) && stat != null) {
             	byte[] b = zk.getData(path, new Watcher() {
 				
                		public void process(WatchedEvent we) {
@@ -281,8 +284,20 @@ public class SERVICE implements Storage {
             return data;
 				
          	} else {
-            	System.out.println("Node does not exists");
-            	return "File does not exists or file name error";
+         		if (exists(file)) {
+         			deleteZnode(file);
+         		}
+         		String addr = fileTable.get(file).get(0);
+				Storage sr = storageTable.get(addr);
+				String s = sr.read(file);
+         		createZnode(path, data);
+         		fileTable.get(file).add(this.localIP);
+				for (String key : storageTable.keySet()) {
+					storageTable.get(key).updateFiles(this.fileTable);
+				}
+            	//System.out.println("Node does not exists");
+            	// return "File does not exists or file name error";
+            	return s;
          	}
       	} catch(Exception e) {
         	System.out.println(e.getMessage());
@@ -339,10 +354,10 @@ public class SERVICE implements Storage {
          	conn = new ZooKeeperConnection();
          	zk = conn.connect("localhost");
          	if (fileTable.containsKey(file)) {
-				createZnode(path, data); // Create the data to the specified path
+				return "File already"; // Create the data to the specified path
 			}
 			if (exists(file)) {
-				delete(file);
+				deleteZnode(file);
 			}
          	createZnode(path, data); // Create the data to the specified path
          	conn.close();
@@ -409,6 +424,11 @@ public class SERVICE implements Storage {
 	public String write(String file, int size) throws java.rmi.UnknownHostException, IOException, KeeperException {
 		String path= file;
       	
+        if (!fileTable.containsKey(file)) {
+			String s = "File does not exists or file name error";
+			return s;
+		}
+		delete(file);
 		Random random = new Random();
 		String content = "";
 		//Generate size random characters, and write it to the file
@@ -419,9 +439,18 @@ public class SERVICE implements Storage {
 		byte[] data = content.getBytes(); //Assign data which is to be updated.
       	try {
          	conn = new ZooKeeperConnection();
-         	zk = conn.connect("localhost");
-         	update(path, data); // Update znode data to the specified path
-         	String s = "Writing successful";
+			zk = conn.connect("localhost");
+         	//update(path, data); // Update znode data to the specified path
+         	createZnode(path, data);
+         	List<String> temp = new LinkedList<>();
+			temp.add(this.localIP);
+			fileTable.put(file, temp);
+			//update the file list hashtable
+			for (String key : storageTable.keySet()) {
+				Hashtable<String, List<String>> ht = this.fileTable;
+				storageTable.get(key).updateFiles(ht);
+			}
+			String s = "Writing successful";
          	System.out.println("the total number of bytes written to the file:" + size);
          	return s;
       	} catch(Exception e) {
@@ -469,11 +498,22 @@ public class SERVICE implements Storage {
    		String path = file; //Assign path to the znode
 		
       	try {
+      		if (!fileTable.containsKey(file)) {
+				String s = "File does not exists or file name error";
+				return s;
+			}
          	conn = new ZooKeeperConnection();
          	zk = conn.connect("localhost");
-         	deleteZnode(path); //delete the node with the specified path
+         	if (exists(file)) {
+         		deleteZnode(file); //delete the node with the specified path
+         	}
+         	
          	String s = "File deleted";
-         	System.out.println(s);
+         	// System.out.println(s);
+         	fileTable.remove(file);
+			for (String key : storageTable.keySet()) {
+				storageTable.get(key).delete(file);
+			}
          	return s;
       	} catch(Exception e) {
          	System.out.println(e.getMessage()); // catches error messages
