@@ -162,7 +162,7 @@ public class SERVICE implements Storage {
 	public String commands(String command) throws RemoteException, IOException, NotBoundException, KeeperException {
 		//input commands from the client
 		String[] info = command.split(" ");
-		if (info.length < 2) return "Input parameter error";
+		if (!info[0].equals("exit") && info.length < 2) return "Input parameter error";
 		if (!info[0].equals("exit") && !info[0].equals("read") && lockedFile.containsKey(info[1])) {
 			return "The file is being read. Operation fails.";
 		}
@@ -199,11 +199,13 @@ public class SERVICE implements Storage {
 			return "command error";
 		}
 	}
-	public void printFiles() throws RemoteException, IOException, NotBoundException, KeeperException, InterruptedException {
+	public void printFiles() throws RemoteException, IOException, NotBoundException, KeeperException{
+		System.out.println();
+		System.out.println("File list:");
 		try {
 			String path = "/";
         	conn = new ZooKeeperConnection();
-         	zk = conn.connect(this.ip[0] + ":" + 2181);
+         	zk = conn.connect(this.localIP);
          	Stat stat = znode_exists(path); // Stat checks the path
 
          	if(stat!= null) {
@@ -240,7 +242,7 @@ public class SERVICE implements Storage {
 		
       	try {
         	conn = new ZooKeeperConnection();
-         	zk = conn.connect(this.ip[0] + ":" + "2181");
+         	zk = conn.connect(this.localIP);
          	Stat stat = znode_exists(path);
 			
          	if(stat != null) {
@@ -333,7 +335,7 @@ public class SERVICE implements Storage {
     
       	try {
          	conn = new ZooKeeperConnection();
-         	zk = conn.connect(this.ip[0] + ":" + "2181");
+         	zk = conn.connect(this.localIP);
          	createZnode(path, data); // Create the data to the specified path
          	conn.close();
          	String s = "File created";
@@ -370,7 +372,7 @@ public class SERVICE implements Storage {
          
       	try {
          	conn = new ZooKeeperConnection();
-         	zk = conn.connect(this.ip[0] + ":" + "2181");
+         	zk = conn.connect(this.localIP);
          	Stat stat = znode_exists(path); // Stat checks the path of the znode
             
          	if(stat != null) {
@@ -403,9 +405,10 @@ public class SERVICE implements Storage {
 		byte[] data = content.getBytes(); //Assign data which is to be updated.
       	try {
          	conn = new ZooKeeperConnection();
-         	zk = conn.connect(this.ip[0] + ":" + "2181");
+         	zk = conn.connect(this.localIP);
          	update(path, data); // Update znode data to the specified path
          	String s = "Writing successful";
+         	System.out.println("the total number of bytes written to the file:" + size);
          	return s;
       	} catch(Exception e) {
          	System.out.println(e.getMessage());
@@ -453,7 +456,7 @@ public class SERVICE implements Storage {
 		
       	try {
          	conn = new ZooKeeperConnection();
-         	zk = conn.connect(this.ip[0] + ":" + "2181");
+         	zk = conn.connect(this.localIP);
          	deleteZnode(path); //delete the node with the specified path
          	String s = "File deleted";
          	System.out.println(s);
