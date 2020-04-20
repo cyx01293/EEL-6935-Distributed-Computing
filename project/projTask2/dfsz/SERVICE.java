@@ -290,7 +290,7 @@ public class SERVICE implements Storage {
          		String addr = fileTable.get(file).get(0);
 				Storage sr = storageTable.get(addr);
 				String s = sr.read(file);
-         		createZnode(path, data);
+         		createZnode(path, s.getBytes());
          		fileTable.get(file).add(this.localIP);
 				for (String key : storageTable.keySet()) {
 					storageTable.get(key).updateFiles(this.fileTable);
@@ -354,7 +354,7 @@ public class SERVICE implements Storage {
          	conn = new ZooKeeperConnection();
          	zk = conn.connect("localhost");
          	if (fileTable.containsKey(file)) {
-				return "File already"; // Create the data to the specified path
+				return "File already exists"; // Create the data to the specified path
 			}
 			if (exists(file)) {
 				deleteZnode(file);
@@ -370,7 +370,7 @@ public class SERVICE implements Storage {
 			}
          	return s;
       	} catch (Exception e) {
-        	System.out.println(e.getMessage());
+        	// System.out.println(e.getMessage());
         	return e.getMessage(); //Catch error message
       	}
 		//Create a file
@@ -405,15 +405,15 @@ public class SERVICE implements Storage {
          	Stat stat = znode_exists(path); // Stat checks the path of the znode
             
          	if(stat != null) {
-            	System.out.println("Node exists and the node version is " + stat.getVersion());
+            	// System.out.println("Node exists and the node version is " + stat.getVersion());
             	return true;
          	} else {
-            	System.out.println("Node does not exists");
+            	// System.out.println("Node does not exists");
             	return false;
          	}
             
       	} catch(Exception e) {
-         	System.out.println(e.getMessage()); // Catches error messages
+         	// System.out.println(e.getMessage()); // Catches error messages
          	return false;
       	}
   	}
@@ -454,7 +454,7 @@ public class SERVICE implements Storage {
          	System.out.println("the total number of bytes written to the file:" + size);
          	return s;
       	} catch(Exception e) {
-         	System.out.println(e.getMessage());
+         	// System.out.println(e.getMessage());
          	String s = "File does not exists or file name error";
          	return s;
       	}
