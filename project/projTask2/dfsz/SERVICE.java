@@ -205,7 +205,7 @@ public class SERVICE implements Storage {
 		try {
 			String path = "/";
         	conn = new ZooKeeperConnection();
-         	zk = conn.connect(this.localIP);
+         	zk = conn.connect("localhost");
          	Stat stat = znode_exists(path); // Stat checks the path
 
          	if(stat!= null) {
@@ -242,7 +242,7 @@ public class SERVICE implements Storage {
 		
       	try {
         	conn = new ZooKeeperConnection();
-         	zk = conn.connect(this.localIP);
+         	zk = conn.connect("localhost");
          	Stat stat = znode_exists(path);
 			
          	if(stat != null) {
@@ -335,7 +335,7 @@ public class SERVICE implements Storage {
     
       	try {
          	conn = new ZooKeeperConnection();
-         	zk = conn.connect(this.localIP);
+         	zk = conn.connect("localhost");
          	createZnode(path, data); // Create the data to the specified path
          	conn.close();
          	String s = "File created";
@@ -372,7 +372,7 @@ public class SERVICE implements Storage {
          
       	try {
          	conn = new ZooKeeperConnection();
-         	zk = conn.connect(this.localIP);
+         	zk = conn.connect("localhost");
          	Stat stat = znode_exists(path); // Stat checks the path of the znode
             
          	if(stat != null) {
@@ -405,7 +405,7 @@ public class SERVICE implements Storage {
 		byte[] data = content.getBytes(); //Assign data which is to be updated.
       	try {
          	conn = new ZooKeeperConnection();
-         	zk = conn.connect(this.localIP);
+         	zk = conn.connect("localhost");
          	update(path, data); // Update znode data to the specified path
          	String s = "Writing successful";
          	System.out.println("the total number of bytes written to the file:" + size);
@@ -456,7 +456,7 @@ public class SERVICE implements Storage {
 		
       	try {
          	conn = new ZooKeeperConnection();
-         	zk = conn.connect(this.localIP);
+         	zk = conn.connect("localhost");
          	deleteZnode(path); //delete the node with the specified path
          	String s = "File deleted";
          	System.out.println(s);
