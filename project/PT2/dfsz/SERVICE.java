@@ -288,7 +288,7 @@ public class SERVICE implements Storage {
             	return "File does not exists or file name error";
          	}
       	} catch(Exception e) {
-        	System.out.println(e.getMessage());
+        	// System.out.println(e.getMessage());
         	return e.getMessage();
       	}
 	}
@@ -307,7 +307,7 @@ public class SERVICE implements Storage {
          	conn.close();
          	return "File created";
       	} catch (Exception e) {
-         	System.out.println(e.getMessage()); //Catch error message
+         	// System.out.println(e.getMessage()); //Catch error message
          	return e.getMessage(); //Catch error message
       	}
 	}
@@ -324,15 +324,15 @@ public class SERVICE implements Storage {
          	Stat stat = znode_exists(path); // Stat checks the path of the znode
             
          	if(stat != null) {
-            	System.out.println("Node exists and the node version is " + stat.getVersion());
+            	// System.out.println("Node exists and the node version is " + stat.getVersion());
             	return true;
          	} else {
-            	System.out.println("Node does not exists");
+            	// System.out.println("Node does not exists");
             	return false;
          	}
             
       	} catch(Exception e) {
-         	System.out.println(e.getMessage()); // Catches error messages
+         	// System.out.println(e.getMessage()); // Catches error messages
          	return false;
       	}
   	}
@@ -359,7 +359,7 @@ public class SERVICE implements Storage {
          	System.out.println("the total number of bytes written to the file:" + size);
          	return s;
       	} catch(Exception e) {
-         	System.out.println(e.getMessage());
+         	// System.out.println(e.getMessage());
          	String s = "File does not exists";
          	return s;
       	}
@@ -378,7 +378,7 @@ public class SERVICE implements Storage {
          	deleteZnode(path); //delete the node with the specified path
          	return "File deleted";
       	} catch(Exception e) {
-         	System.out.println(e.getMessage()); // catches error messages
+         	// System.out.println(e.getMessage()); // catches error messages
          	String s = "File does not exists or file name error";
          	return s;
       	}
