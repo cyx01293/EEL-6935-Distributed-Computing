@@ -42,7 +42,7 @@ public class DFSCLIENT {
 		//Initialize the server
 		String clientID = "";
 		clientID += random.nextInt(100000);
-		service.initial(argsSize, ip, port, clientID);
+		service.initial(argsSize, ip, port, clientIP + ":" + port[0]);
 		Scanner in = new Scanner(System.in);
 		String r = "";
 		String lastCommand = "";
