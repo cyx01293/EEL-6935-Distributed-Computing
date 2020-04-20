@@ -169,6 +169,7 @@ public class SERVICE implements Storage {
 		if (info[0].equals("create")) {
 			String s = create(info[1]);
 			printFiles();
+			return s;
 			// if(create(info[1])) {
 			// 	printFiles();
 			// 	return "File created";
@@ -275,7 +276,7 @@ public class SERVICE implements Storage {
             	}, null);
 				
             String data = new String(b, "UTF-8");
-            System.out.println(data);
+            // System.out.println(data);
             // connectedSignal.await();
             return data;
 				
@@ -337,9 +338,21 @@ public class SERVICE implements Storage {
       	try {
          	conn = new ZooKeeperConnection();
          	zk = conn.connect("localhost");
+         	if (fileTable.containsKey(file)) {
+				createZnode(path, data); // Create the data to the specified path
+			}
+			if (exists(file)) {
+				delete(file);
+			}
          	createZnode(path, data); // Create the data to the specified path
          	conn.close();
          	String s = "File created";
+         	List<String> temp = new LinkedList<>();
+			temp.add(this.localIP);
+			fileTable.put(file, temp);
+			for (String key : storageTable.keySet()) {
+				storageTable.get(key).updateFiles(this.fileTable);
+			}
          	return s;
       	} catch (Exception e) {
         	System.out.println(e.getMessage());
