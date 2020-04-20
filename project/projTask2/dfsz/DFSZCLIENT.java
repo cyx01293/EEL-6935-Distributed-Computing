@@ -61,16 +61,16 @@ public class DFSZCLIENT {
 			try {
 				System.out.println("Enter command:"); 
 				r = in.nextLine();
-				// String[] lastInfo = lastCommand.split(" ");
-				// if (lastInfo[0].equals("read") || lastInfo[0].equals("write")) {
-				// 	service.releaseLock(lastInfo[0], lastInfo[1]);
-				// }
+				String[] lastInfo = lastCommand.split(" ");
+				if (lastInfo[0].equals("read") || lastInfo[0].equals("write")) {
+					service.releaseLock(lastInfo[0], lastInfo[1]);
+				}
 				String s = service.commands(r);
-				// String[] currentInfo = r.split(" ");
-				// if (currentInfo[0].equals("read") || currentInfo[0].equals("write")) {
-				// 	service.acquireLock(currentInfo[0], currentInfo[1]);
-				// }
-				// lastCommand = r;
+				String[] currentInfo = r.split(" ");
+				if (currentInfo[0].equals("read") || currentInfo[0].equals("write")) {
+					service.acquireLock(currentInfo[0], currentInfo[1]);
+				}
+				lastCommand = r;
 				System.out.println(s);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
