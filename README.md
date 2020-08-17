@@ -1,5 +1,4 @@
 # EEL 6935 Distributed Computing
- 
  ------
 This repository is for the course homework and project of EEL 6935 Distributed Computing, University of Florida, spring 2020. 
 
